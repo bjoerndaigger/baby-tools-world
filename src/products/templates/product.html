@@ -38,13 +38,26 @@
             <div class="mb-3 text-muted">No ratings yet</div>
           {% endif %}
         {% endwith %}
+        <!-- (3) Product Tags -->
+        <div class="mb-3">
+          <strong>Product-Tags</strong>
+          <div class="mt-1">
+            {% if product.tag.all %}
+              {% for tag in product.tag.all %}
+                <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="text-muted fst-italic">no tags available</span>
+            {% endif %}
+          </div>
+        </div>
 
         <div class="btn btn-primary btn-center mt-auto">Buy now</div>
       </div>
 
       <div class="col-auto d-none d-lg-block">
         {% if product.image %}
-          <img src="{% static product.image %}" width="400" height="400" alt="{{ product.name }}">
+          <img src="{{ product.image.url }}" width="400" height="400" alt="{{ product.name }}">
         {% else %}
           <img src="https://placehold.co/400x400" width="400" height="400" alt="Placeholder">
         {% endif %}

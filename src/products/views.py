@@ -35,7 +35,8 @@ def product_detail(request, category_slug, pk):
     comments = product.comments.select_related("user").order_by("-created_at")
 
     if request.method == "POST":
-        form = CommentForm(request.POST, initial={"user": request.user if request.user.is_authenticated else None})
+        form = CommentForm(request.POST, initial={
+                           "user": request.user if request.user.is_authenticated else None})
         if form.is_valid():
             rating = form.cleaned_data["rating"]
             text = form.cleaned_data.get("text", "")
@@ -43,13 +44,15 @@ def product_detail(request, category_slug, pk):
             if request.user.is_authenticated:
                 # Upsert: update existing comment or create a new one
                 comment, created = Comment.objects.get_or_create(
-                    product=product, user=request.user, defaults={"rating": rating, "text": text}
+                    product=product, user=request.user, defaults={
+                        "rating": rating, "text": text}
                 )
                 if not created:
                     comment.rating = rating
                     comment.text = text
                     comment.save()
-                messages.success(request, "Your rating was {}.".format("submitted" if created else "updated"))
+                messages.success(request, "Your rating was {}.".format(
+                    "submitted" if created else "updated"))
             else:
                 # Guest: create a new comment (no uniqueness constraint)
                 comment = form.save(commit=False)
@@ -65,10 +68,11 @@ def product_detail(request, category_slug, pk):
             existing = product.comments.filter(user=request.user).first()
             if existing:
                 initial = {"rating": existing.rating, "text": existing.text}
-        form = CommentForm(initial=initial)
+        form = CommentForm()
 
     return render(
         request,
         "product.html",
-        {"product": product, "comments": comments, "related_products": related_products, "form": form},
+        {"product": product, "comments": comments,
+            "related_products": related_products, "form": form},
     )

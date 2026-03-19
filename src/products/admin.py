@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import Category, Comment, Product
+from .models import Category, Comment, Product, Tag
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ("name",)
 
 
 @admin.register(Category)
@@ -11,7 +17,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "category", "price", "average_rating", "rating_count", "created_at")
+    list_display = ("name", "category", "price",
+                    "average_rating", "rating_count", "created_at")
     list_select_related = ("category",)
 
 
