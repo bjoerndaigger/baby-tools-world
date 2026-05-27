@@ -42,8 +42,8 @@
         <div class="mb-3">
           <strong>Product-Tags</strong>
           <div class="mt-1">
-            {% if product.tag.all %}
-              {% for tag in product.tag.all %}
+            {% if product.tags.all %}
+              {% for tag in product.tags.all %}
                 <span class="badge bg-secondary me-1">{{ tag.name }}</span>
               {% endfor %}
             {% else %}
