@@ -73,7 +73,7 @@ def product_detail(request: HttpRequest, category_slug: str, pk: int) -> HttpRes
             existing: Comment | None = product.comments.filter(user=request.user).first()
             if existing:
                 initial = {"rating": existing.rating, "text": existing.text}
-        form = CommentForm()
+        form = CommentForm(initial=initial)
 
     return render(
         request,
