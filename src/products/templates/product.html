@@ -216,7 +216,7 @@
               <div class="card">
                 {% if other.image %}
                   <img
-                    src="{% static other.image %}"
+                    src="{{ other.image.url }}"
                     class="card-img-top related-img"
                     alt="{{ other.name }}"
                     style="height:160px; width:100%; object-fit:cover; aspect-ratio:16/9;"
