@@ -1,12 +1,14 @@
 from django.contrib import messages
 from django.db.models import Avg, Count
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CommentForm
 from .models import Category, Comment, Product
 
 
-def product_list(request, category_slug=None):
+def product_list(request: HttpRequest, category_slug: str | None = None) -> HttpResponse:
+    """Display a list of products, optionally filtered by category."""
     categories = Category.objects.all()
     products = Product.objects.select_related("category").annotate(
         avg_rating=Avg("comments__rating"), total_ratings=Count("comments")
@@ -16,8 +18,9 @@ def product_list(request, category_slug=None):
     return render(request, "products.html", {"categories": categories, "products": products})
 
 
-def product_detail(request, category_slug, pk):
-    product = get_object_or_404(
+def product_detail(request: HttpRequest, category_slug: str, pk: int) -> HttpResponse:
+    """Display a product detail page and handle comment form submission."""
+    product: Product = get_object_or_404(
         Product.objects.select_related("category").annotate(
             avg_rating=Avg("comments__rating"), total_ratings=Count("comments")
         ),
@@ -35,21 +38,26 @@ def product_detail(request, category_slug, pk):
     comments = product.comments.select_related("user").order_by("-created_at")
 
     if request.method == "POST":
-        form = CommentForm(request.POST, initial={"user": request.user if request.user.is_authenticated else None})
+        form = CommentForm(request.POST, initial={
+                           "user": request.user if request.user.is_authenticated else None})
         if form.is_valid():
-            rating = form.cleaned_data["rating"]
-            text = form.cleaned_data.get("text", "")
+            rating: int = form.cleaned_data["rating"]
+            text: str = form.cleaned_data.get("text", "")
 
             if request.user.is_authenticated:
                 # Upsert: update existing comment or create a new one
+                comment: Comment
+                created: bool
                 comment, created = Comment.objects.get_or_create(
-                    product=product, user=request.user, defaults={"rating": rating, "text": text}
+                    product=product, user=request.user, defaults={
+                        "rating": rating, "text": text}
                 )
                 if not created:
                     comment.rating = rating
                     comment.text = text
                     comment.save()
-                messages.success(request, "Your rating was {}.".format("submitted" if created else "updated"))
+                messages.success(request, "Your rating was {}.".format(
+                    "submitted" if created else "updated"))
             else:
                 # Guest: create a new comment (no uniqueness constraint)
                 comment = form.save(commit=False)
@@ -60,9 +68,9 @@ def product_detail(request, category_slug, pk):
             return redirect("product_detail", category_slug=category_slug, pk=product.pk)
     else:
         # Pre-fill form for authenticated user with existing comment (if any)
-        initial = {}
+        initial: dict[str, object] = {}
         if request.user.is_authenticated:
-            existing = product.comments.filter(user=request.user).first()
+            existing: Comment | None = product.comments.filter(user=request.user).first()
             if existing:
                 initial = {"rating": existing.rating, "text": existing.text}
         form = CommentForm(initial=initial)
@@ -70,5 +78,6 @@ def product_detail(request, category_slug, pk):
     return render(
         request,
         "product.html",
-        {"product": product, "comments": comments, "related_products": related_products, "form": form},
+        {"product": product, "comments": comments,
+            "related_products": related_products, "form": form},
     )

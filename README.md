@@ -6,6 +6,23 @@ The project was developed for educational purposes only and therefore has no cla
 > [!NOTE]
 > This project assumes you already know the python programming language
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Quickstart](#quickstart)
+- [Usage](#usage)
+  - [Project Structure](#project-structure)
+  - [Apps Overview](#apps-overview)
+  - [Features](#features)
+  - [Configuration](#configuration)
+- [Running the Linting Tools](#running-the-linting-tools)
+- [Testing](#testing)
+- [Running with a WSGI Server](#running-with-a-wsgi-server)
+- [Seeding the Application with Data](#seeding-the-application-with-data)
+- [Containerization](#containerization)
+  - [Build an Image](#build-an-image)
+  - [Run a Container](#run-a-container)
+
 ## Prerequisites
 
 In order to seamlessly interact with the repository and the software it contains you need to following tools preinstalled:
@@ -35,7 +52,9 @@ In order to quickly get started with the project follow these steps:
 1. verify the application is running by visiting `localhost:8000`
 1. (optional) create a superuser by running: `python manage.py createsuperuser`
 
-## Project Structure
+## Usage
+
+### Project Structure
 
 - `.gitlab`: GitLab specific project files
 - `.github`: GitHub specific project files
@@ -52,9 +71,19 @@ The project is modularized into several apps:
 Each app has its own `models.py`, `views.py`, `urls.py`, and `admin.py` files to encapsulate its functionality.
 
 
-## Usage
+### Features
 
-In this section you can read about the project a bit more in detail.
+- **Product Overview**  
+  Browse products by category (*boys, girls, toys, outdoor*) via the buttons on the top-left of the homepage. Each product belongs to exactly one category.
+
+- **Product Detail View**  
+  Click on any product to open its detail page, where you can see the full description, assigned category and all associated tags. Each product can also be rated by users.
+
+- **Tag System**  
+  Products can have multiple tags, displayed on each product card. Click a tag to see all products sharing that tag.
+
+- **Admin Panel**  
+  Users with admin rights can manage products, categories and tags via `/admin`. Admins can also manage other users — create, update and delete accounts. A superuser can be created via `python manage.py createsuperuser`.
 
 ### Configuration
 
@@ -66,6 +95,7 @@ To configure the project, follow these steps:
 2. Open your `src/.env` and set the required environment variables:
     - `ALLOWED_HOSTS`: provide a list of comma-separated values for the allowed host configuration => Defaults to `'localhost, 127.0.0.1, 0.0.0.0'`
     - `DEBUG`: Set to `True` for development or `False` for production. Defaults to `True`
+
 
 ### Running the linting tools
 
